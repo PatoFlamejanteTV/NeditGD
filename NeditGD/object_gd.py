@@ -105,13 +105,22 @@ class Object(UserDict):
     # reconstructed from RobTop's string encoding.
     @classmethod
     def from_robtop(cls, rob: str) -> Object:
-        obj = {}
+        # Optimization: Bypass __init__ and __setitem__ overhead
+        # Pre-populate with default values as in __init__
+        data = {1: 1, 2: 0, 3: 0, 155: 1}
+
         arr_obj = rob.split(',')
-        encoded_pairs = [(arr_obj[i], arr_obj[i+1])
-                        for i in range(0, len(arr_obj), 2)]
-        for (k, v) in encoded_pairs:
-            obj[f'_{k}'] = properties.decode_property_pair(int(k), v)
-        return Object(**obj)
+        # Iterate over the array with step 2 to get key-value pairs
+        # Avoid creating intermediate list of tuples
+        len_arr = len(arr_obj)
+        for i in range(0, len_arr, 2):
+            k = int(arr_obj[i])
+            v = arr_obj[i+1]
+            data[k] = properties.decode_property_pair(k, v)
+
+        new_obj = cls.__new__(cls)
+        new_obj.data = data
+        return new_obj
     
     # To save an object, it is converted to RobTop's string encoding.
     def to_robtop(self) -> str:
