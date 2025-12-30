@@ -105,13 +105,23 @@ class Object(UserDict):
     # reconstructed from RobTop's string encoding.
     @classmethod
     def from_robtop(cls, rob: str) -> Object:
-        obj = {}
+        instance = cls()
+        data = instance.data
         arr_obj = rob.split(',')
-        encoded_pairs = [(arr_obj[i], arr_obj[i+1])
-                        for i in range(0, len(arr_obj), 2)]
-        for (k, v) in encoded_pairs:
-            obj[f'_{k}'] = properties.decode_property_pair(int(k), v)
-        return Object(**obj)
+        it = iter(arr_obj)
+        for k in it:
+            try:
+                v = next(it)
+            except StopIteration:
+                break
+            k_int = int(k)
+            decoded_v = properties.decode_property_pair(k_int, v)
+
+            if k_int == 1 and isinstance(decoded_v, str):
+                decoded_v = oid_from_alias(decoded_v)
+
+            data[k_int] = decoded_v
+        return instance
     
     # To save an object, it is converted to RobTop's string encoding.
     def to_robtop(self) -> str:
