@@ -4,34 +4,45 @@ from NeditGD.Dictionaries.PropertyHSV import HSV
 from NeditGD.Dictionaries.ParticleEmitter import Emitter
 
 
+# Pre-compute sets for faster lookups
+LIST_PROPERTIES = {
+    NAME_TO_ID['groups'],
+    NAME_TO_ID['parent_groups'],
+    NAME_TO_ID['events']
+}
+
+PAIRS_LIST_PROPERTIES = {
+    NAME_TO_ID['spawn_remap'],
+    NAME_TO_ID['group_probabilities'],
+    NAME_TO_ID['sequence']
+}
+
+HSV_PROPERTIES = {
+    NAME_TO_ID['hsv'],
+    NAME_TO_ID['color_2_hsv'],
+    NAME_TO_ID['copied_color_hsv']
+}
+
+TEXT_PROPERTY = NAME_TO_ID['text']
+PARTICLE_SETUP_PROPERTY = NAME_TO_ID['particle_setup']
+
+
 # Decode a property encoded RobTop's way
 def decode_property_pair(p_id: int, data: str) -> int | float | list[int]:
-    if p_id in {NAME_TO_ID['groups'],
-                NAME_TO_ID['parent_groups'],
-                NAME_TO_ID['events']}:
+    if p_id in LIST_PROPERTIES:
         return decode_list(data)
     
-    if p_id in {NAME_TO_ID['spawn_remap'],
-                NAME_TO_ID['group_probabilities'],
-                NAME_TO_ID['sequence']}:
+    if p_id in PAIRS_LIST_PROPERTIES:
         return decode_pairs_list(data)
     
-    if p_id == NAME_TO_ID['text']:
+    if p_id == TEXT_PROPERTY:
         return decode_text(data)
     
-    if p_id in {NAME_TO_ID['hsv'],
-                NAME_TO_ID['color_2_hsv'],
-                NAME_TO_ID['copied_color_hsv']}:
+    if p_id in HSV_PROPERTIES:
         return decode_HSV(data)
 
-    if p_id == NAME_TO_ID['particle_setup']:
+    if p_id == PARTICLE_SETUP_PROPERTY:
         return data
-    #     print(data)
-    #     em = Emitter.from_string(data)
-    #     print(em)
-    #     print(data)
-    #     print(em.get_property_list())
-    #     return Emitter.from_string(data)
 
     try: return int(data)
     except: pass
@@ -52,7 +63,7 @@ def encode_property(p_id: int, data: str) -> str:
             return encode_pairs_list(p_id, data)
         return encode_list(p_id, data)
     
-    if p_id == NAME_TO_ID['particle_setup']:
+    if p_id == PARTICLE_SETUP_PROPERTY:
         return f'{p_id},{data},'
     
     if type(data) is str:
