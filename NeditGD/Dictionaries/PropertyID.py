@@ -248,6 +248,7 @@ ALIASES = {
     'item': 'item_id',
 }
 
+ID_TO_NAME = {v: k for k, v in NAME_TO_ID.items()}
 
 def get_property_id(name: str) -> int:
     if name in ALIASES:
