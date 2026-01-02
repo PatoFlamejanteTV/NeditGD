@@ -236,6 +236,8 @@ NAME_TO_ID = {
     'neg_op_2': 579,
 }
 
+ID_TO_NAME = {v: k for k, v in NAME_TO_ID.items()}
+
 ALIASES = {
     'remap': 'spawn_remap',
     'op_1': 'num_op_1',

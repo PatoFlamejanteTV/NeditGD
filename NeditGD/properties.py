@@ -1,30 +1,45 @@
 import base64
-from NeditGD.Dictionaries.PropertyID import NAME_TO_ID
+from NeditGD.Dictionaries.PropertyID import NAME_TO_ID, ID_TO_NAME
 from NeditGD.Dictionaries.PropertyHSV import HSV
 from NeditGD.Dictionaries.ParticleEmitter import Emitter
 
+# Pre-calculate property sets for faster lookups
+LIST_PROPERTIES = {
+    NAME_TO_ID['groups'],
+    NAME_TO_ID['parent_groups'],
+    NAME_TO_ID['events']
+}
+
+PAIR_LIST_PROPERTIES = {
+    NAME_TO_ID['spawn_remap'],
+    NAME_TO_ID['group_probabilities'],
+    NAME_TO_ID['sequence']
+}
+
+HSV_PROPERTIES = {
+    NAME_TO_ID['hsv'],
+    NAME_TO_ID['color_2_hsv'],
+    NAME_TO_ID['copied_color_hsv']
+}
+
+TEXT_PROPERTY = NAME_TO_ID['text']
+PARTICLE_SETUP_PROPERTY = NAME_TO_ID['particle_setup']
 
 # Decode a property encoded RobTop's way
 def decode_property_pair(p_id: int, data: str) -> int | float | list[int]:
-    if p_id in {NAME_TO_ID['groups'],
-                NAME_TO_ID['parent_groups'],
-                NAME_TO_ID['events']}:
+    if p_id in LIST_PROPERTIES:
         return decode_list(data)
     
-    if p_id in {NAME_TO_ID['spawn_remap'],
-                NAME_TO_ID['group_probabilities'],
-                NAME_TO_ID['sequence']}:
+    if p_id in PAIR_LIST_PROPERTIES:
         return decode_pairs_list(data)
     
-    if p_id == NAME_TO_ID['text']:
+    if p_id == TEXT_PROPERTY:
         return decode_text(data)
     
-    if p_id in {NAME_TO_ID['hsv'],
-                NAME_TO_ID['color_2_hsv'],
-                NAME_TO_ID['copied_color_hsv']}:
+    if p_id in HSV_PROPERTIES:
         return decode_HSV(data)
 
-    if p_id == NAME_TO_ID['particle_setup']:
+    if p_id == PARTICLE_SETUP_PROPERTY:
         return data
     #     print(data)
     #     em = Emitter.from_string(data)
@@ -52,7 +67,7 @@ def encode_property(p_id: int, data: str) -> str:
             return encode_pairs_list(p_id, data)
         return encode_list(p_id, data)
     
-    if p_id == NAME_TO_ID['particle_setup']:
+    if p_id == PARTICLE_SETUP_PROPERTY:
         return f'{p_id},{data},'
     
     if type(data) is str:
@@ -66,12 +81,11 @@ def encode_property(p_id: int, data: str) -> str:
 # Get the name of a property if one exists,
 # else get ID with leading underscore
 def get_property_name(p_id: int):
-    key_str = f'_{p_id}'
-    for name, _id in NAME_TO_ID.items():
-        if _id == p_id:
-            key_str = name
-            break
-    return key_str
+    # O(1) lookup instead of O(N) loop
+    name = ID_TO_NAME.get(p_id)
+    if name:
+        return name
+    return f'_{p_id}'
 
 # Decode a list encoded RobTop's way
 def decode_list(data: str) -> list[int]:
