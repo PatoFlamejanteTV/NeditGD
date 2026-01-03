@@ -236,6 +236,12 @@ NAME_TO_ID = {
     'neg_op_2': 579,
 }
 
+if len(NAME_TO_ID.values()) != len(set(NAME_TO_ID.values())):
+    # Or use logging/warnings if an exception is too disruptive during startup
+    raise ValueError("Duplicate IDs found in NAME_TO_ID, reverse mapping will be incorrect.")
+
+ID_TO_NAME = {v: k for k, v in NAME_TO_ID.items()}
+
 ALIASES = {
     'remap': 'spawn_remap',
     'op_1': 'num_op_1',
