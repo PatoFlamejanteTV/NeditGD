@@ -4,11 +4,11 @@ from NeditGD.Dictionaries.PropertyHSV import HSV
 from NeditGD.Dictionaries.ParticleEmitter import Emitter
 
 # Pre-calculate property sets for faster lookups
-LIST_PROPERTIES = {
+LIST_PROPERTIES = frozenset({
     NAME_TO_ID['groups'],
     NAME_TO_ID['parent_groups'],
     NAME_TO_ID['events']
-}
+})
 
 PAIR_LIST_PROPERTIES = {
     NAME_TO_ID['spawn_remap'],
