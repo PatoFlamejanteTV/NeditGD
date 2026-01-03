@@ -82,10 +82,7 @@ def encode_property(p_id: int, data: str) -> str:
 # else get ID with leading underscore
 def get_property_name(p_id: int):
     # O(1) lookup instead of O(N) loop
-    name = ID_TO_NAME.get(p_id)
-    if name:
-        return name
-    return f'_{p_id}'
+    return ID_TO_NAME.get(p_id, f'_{p_id}')
 
 # Decode a list encoded RobTop's way
 def decode_list(data: str) -> list[int]:
