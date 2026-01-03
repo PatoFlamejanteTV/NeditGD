@@ -124,7 +124,7 @@ class Object(UserDict):
     
     # To save an object, it is converted to RobTop's string encoding.
     def to_robtop(self) -> str:
-        res = []
+        parts = []
         for (k, v) in self.data.items():
             if Object.is_tmp_key(k): continue
             res.append(properties.encode_property(k, v))
