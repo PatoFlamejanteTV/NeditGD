@@ -7,7 +7,13 @@ from NeditGD.object_gd import Object
 
 
 SAVE_FILE = "CCLocalLevels.dat"
-PATH_TO_SAVE = os.getenv("localappdata") + "\\GeometryDash\\"
+# Handle case where localappdata is not set (e.g. Linux/CI)
+_local_app_data = os.getenv("localappdata")
+if _local_app_data:
+    PATH_TO_SAVE = _local_app_data + "\\GeometryDash\\"
+else:
+    # Fallback for testing environment
+    PATH_TO_SAVE = "./"
 
 
 # Read the file from the save path
