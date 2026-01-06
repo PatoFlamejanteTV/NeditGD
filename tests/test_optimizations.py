@@ -3,17 +3,28 @@ import sys
 import os
 import unittest
 import base64
+import tempfile
+import shutil
 
 sys.path.append(os.getcwd())
-os.environ['localappdata'] = "/tmp"
+
+# Setup localappdata with a temp directory
+temp_dir = tempfile.mkdtemp()
+os.environ['localappdata'] = temp_dir
 
 from NeditGD.object_gd import Object
 import NeditGD.properties as properties
+from NeditGD.Dictionaries.PropertyID import NAME_TO_ID
 
 class TestOptimizations(unittest.TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        # Cleanup temp directory
+        shutil.rmtree(temp_dir)
+
     def test_encode_text(self):
         text = "Hello World"
-        p_id = 31 # Text property ID usually
+        p_id = NAME_TO_ID.get('text', 31) # Dynamic lookup with fallback
         encoded = properties.encode_text(p_id, text)
 
         # Verify format: p_id,base64,
@@ -46,10 +57,6 @@ class TestOptimizations(unittest.TestCase):
         self.assertEqual(obj2['y'], 20)
 
         # We need to find the text property ID.
-        # Assuming 'text' is property 31 (based on properties.py TEXT_PROPERTY)
-        # But Object uses lazy property lookup.
-        # Let's check what ID 'text' maps to.
-        from NeditGD.Dictionaries.PropertyID import NAME_TO_ID
         text_id = NAME_TO_ID['text']
 
         self.assertEqual(obj2[text_id], "Test Text")
