@@ -128,7 +128,8 @@ class Object(UserDict):
         for (k, v) in self.data.items():
             if Object.is_tmp_key(k): continue
             res.append(properties.encode_property(k, v))
-        return "".join(res)[:-1]
+        encoded = "".join(res)
+        return encoded[:-1] if encoded.endswith(",") else encoded
 
     @staticmethod
     def list_to_robtop(objects: Iterable[Object]):
