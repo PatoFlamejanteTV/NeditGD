@@ -123,6 +123,6 @@ def decode_text(data: bytes) -> str:
 # The text object's message is encoded in base64,
 # this method encodes plaintext.
 def encode_text(p_id: int, text: str) -> str:
-    enc = base64.b64encode(text.encode()).decode()
+    # Optimized: Removed redundant standard base64 encoding
     enc = base64.b64encode(text.encode(), altchars=b'-_').decode()
     return f'{p_id},{enc},'
