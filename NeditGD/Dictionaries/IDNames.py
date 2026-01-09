@@ -51,10 +51,10 @@ OBJECT_IDS = {
     'item_comp_t' : 3620,
 }
 
+IDS_TO_ALIAS = {v: k for k, v in OBJECT_IDS.items()}
+
 def oid_from_alias(alias: str) -> int:
     return OBJECT_IDS.get(alias, -1)
 
 def oid_to_alias(oid: int) -> str:
-    for alias, oid2 in OBJECT_IDS.items():
-        if oid2 == oid: return alias
-    return str(oid)
+    return IDS_TO_ALIAS.get(oid, str(oid))
