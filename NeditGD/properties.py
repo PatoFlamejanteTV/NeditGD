@@ -48,9 +48,18 @@ def decode_property_pair(p_id: int, data: str) -> int | float | list[int]:
     #     print(em.get_property_list())
     #     return Emitter.from_string(data)
 
-    try: return int(data)
-    except: pass
+    if '.' in data:
+        try:
+            return float(data)
+        except ValueError:
+            pass
+    else:
+        try:
+            return int(data)
+        except ValueError:
+            pass
 
+    # Fallback for scientific notation or weird formats that failed above
     try: return float(data)
     except: pass
 
