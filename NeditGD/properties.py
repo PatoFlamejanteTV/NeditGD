@@ -62,7 +62,13 @@ def decode_property_pair(p_id: int, data: str) -> int | float | list[int]:
 
 # Encode a property RobTop's way
 def encode_property(p_id: int, data: str) -> str:
-    if type(data) is list:
+    # Optimization: Most properties are numbers, check for them first
+    # using strict type checking for speed (isinstance is slower here)
+    t = type(data)
+    if t is int or t is float:
+        return f'{p_id},{data},'
+
+    if t is list:
         if data and type(data[0]) is tuple:
             return encode_pairs_list(p_id, data)
         return encode_list(p_id, data)
@@ -70,10 +76,10 @@ def encode_property(p_id: int, data: str) -> str:
     if p_id == PARTICLE_SETUP_PROPERTY:
         return f'{p_id},{data},'
     
-    if type(data) is str:
+    if t is str:
         return encode_text(p_id, data)
     
-    if type(data) is HSV:
+    if t is HSV:
         return encode_HSV(p_id, data)
     
     return f'{p_id},{data},'
