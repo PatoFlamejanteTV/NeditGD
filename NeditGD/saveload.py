@@ -27,10 +27,9 @@ def overwrite_gamesave(data: bytes):
 
 # Apply xor to decode/encode data
 def xor_data(data, key) -> str:
-    res = []
-    for i in data:
-        res.append(i ^ key)
-    return bytearray(res).decode()
+    # Use bytes.translate for high performance XOR
+    table = bytes(i ^ key for i in range(256))
+    return data.translate(table).decode()
 
 
 
