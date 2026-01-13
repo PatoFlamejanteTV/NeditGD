@@ -124,11 +124,15 @@ class Object(UserDict):
     
     # To save an object, it is converted to RobTop's string encoding.
     def to_robtop(self) -> str:
-        res = ''
-        for (k, v) in self.data.items():
-            if Object.is_tmp_key(k): continue
-            res += properties.encode_property(k, v)
-        return res[:-1]
+        res = []
+        # Local variable lookup is faster
+        encode = properties.encode_property
+        is_tmp = Object.is_tmp_key
+
+        for k, v in self.data.items():
+            if is_tmp(k): continue
+            res.append(encode(k, v))
+        return ''.join(res)[:-1]
 
     @staticmethod
     def list_to_robtop(objects: Iterable[Object]):
