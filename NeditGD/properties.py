@@ -48,11 +48,15 @@ def decode_property_pair(p_id: int, data: str) -> int | float | list[int]:
     #     print(em.get_property_list())
     #     return Emitter.from_string(data)
 
-    try: return int(data)
-    except: pass
-
-    try: return float(data)
-    except: pass
+    # Optimization: Check for decimal point to avoid expensive try-except for floats
+    if '.' in data:
+        try: return float(data)
+        except: pass
+    else:
+        try: return int(data)
+        except:
+            try: return float(data)
+            except: pass
 
     try:
         return base64.b64decode(data, altchars=b'-_')
